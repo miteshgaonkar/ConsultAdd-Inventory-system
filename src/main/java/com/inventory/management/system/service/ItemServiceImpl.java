@@ -1,5 +1,7 @@
 package com.inventory.management.system.service;
 
+import com.inventory.management.system.exception.ItemError;
+import com.inventory.management.system.exception.ItemNotFoundException;
 import com.inventory.management.system.model.Item;
 import com.inventory.management.system.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +23,17 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public Optional<Item> getItemById(Long id) {
-        return itemRepository.findById(id);
+        return Optional.ofNullable(itemRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException(ItemError.PRODUCT_NOT_FOUND)));
     }
 
     @Override
     public Item createItem(Item item) {
-        try{
+        try {
             return itemRepository.save(item);
-        }catch(Exception e){
-           e.printStackTrace();
+        } catch (Exception e) {
+            throw new ItemNotFoundException(ItemError.INTERNAL_SERVER_ERROR);
         }
-        return null;
     }
 
     @Override
@@ -42,11 +44,14 @@ public class ItemServiceImpl implements ItemService{
             item.setPrice(updatedItem.getPrice());
             item.setDescription(updatedItem.getDescription());
             return itemRepository.save(item);
-        }).orElseThrow(() -> new RuntimeException("Item not found with id " + id));
+        }).orElseThrow(() -> new ItemNotFoundException(ItemError.PRODUCT_NOT_FOUND));
     }
 
     @Override
     public void deleteItem(Long id) {
+        if (!itemRepository.existsById(id)) {
+            throw new ItemNotFoundException(ItemError.PRODUCT_OUT_OF_STOCK);
+        }
         itemRepository.deleteById(id);
     }
 }
