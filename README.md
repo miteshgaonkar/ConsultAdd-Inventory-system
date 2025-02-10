@@ -71,13 +71,22 @@ The application will start on [http://localhost:8000](http://localhost:8080).
 #### Response:
 
 ```yaml
-  {
+[
+ {
     "id": 1,
     "name": "Laptop",
     "quantity": 10,
     "price": 50000,
     "description": "High-performance laptop"
+  },
+  {
+    "id": 2,
+    "name": "Monitor",
+    "quantity": 5,
+    "price": 15000,
+    "description": "24-inch LED Monitor"
   }
+]
 ```
 
 ### Get Item by ID
